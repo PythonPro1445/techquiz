@@ -1,18 +1,40 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee+Spice&family=IBM+Plex+Mono:wght@200&family=Monoton&family=Nunito:wght@300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.0.0/p5.js"></script>
+    <script src="https://unpkg.com/ml5@0.4.3/dist/ml5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.0.0/lib/addons/p5.sound.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.0.0/addons/p5.sound.min.js"></script>
     <title>Ancient Tech Quiz</title>
-</head>
-<style>
-    .loading-overlay {
-            display: none;
+    <link rel="icon" href="Connect.png">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .loading-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255);
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
             justify-content: center;
             align-items: center;
             z-index: 9999;
@@ -24,45 +46,220 @@
             align-items: center;
         }
 
-        .loading-text {
-            color: #333;
-            font-size: 40px;
-            margin-top: 5px;
-        }
-
         .loading-spinner img {
-            width: 1250px; /* Adjust the size of the spinner */
+            width: 100px; /* Adjust the size of the spinner */
         }
 
-</style>
-<body>
-        <!-- Loading Overlay -->
-        <div class="loading-overlay" id="loading-overlay">
-            <div class="loading-spinner">
-                <img src="loading.gif" alt="Loading Spinner">
-            </div>
+        .loading-text {
+            font-family: 'Nunito';
+            font-size: 18px;
+            color: white;
+            margin-top: 10px;
+            text-align: center; /* Center-align the text */
+        }
+
+        #form {
+            animation-name: color;
+            animation-duration: 4s;
+            animation-iteration-count: infinite;
+            background-color: rgb(216, 205, 205);
+            border: 2px solid #333;
+            border-radius: 30px;
+            padding: 20px;
+            width: 1200px;
+            height: 600px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            font-family: 'Nunito';
+            color: black;
+            font-size: 36px;
+            margin-top: 10px;
+            padding-left: 10px;
+            text-align: left;
+        }
+
+        h2 {
+            font-family: 'Nunito';
+            font-size: 24px;
+            width: 500px;
+            text-align: center;
+        }
+
+        input[type="text"] {
+            height: 60px;
+            width: 90%;
+            max-width: 400px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 130px;
+        }
+
+        #button1 {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            height: 60px;
+            transition: background-color 0.3s ease;
+        }
+
+        #button1:hover {
+            background-color: #555;
+        }
+
+        #website-content {
+            display: none;
+        }
+
+        #startquizbutton {
+            background-color: green;
+            color: black;
+            border-radius: 10px;
+            height: 60px;
+            width: 100px;
+            transition: background-color 0.3s ease;
+        }
+
+        #startquizbutton:hover {
+            background-color: #555;
+        }
+
+        .div-quiz {
+            text-align: top;
+            padding-right: 40px;
+        }
+
+        #nextButton{
+            background-color: green;
+            color: black;
+            border-radius: 10px;
+            height: 60px;
+            width: 100px;
+        }
+    </style>
+</head>
+<body background="background.jpg">
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner">
+            <img src="loading.gif" alt="Loading Spinner">
+            <div class="loading-text">Initializing Quiz Data...</div> <!-- Added loading text -->
         </div>
+    </div>
+
+    <div id="website-content">
+        <form id="form">
+            <h1>Ancient Tech Quiz</h1>
+            <div class="div-quiz">
+                <button type="button" id="startquizbutton" onclick="startQuiz()">Start Quiz!</button>
+                <button type="button" id="startquizbutton" onclick="htp();">How To Play</button>
+                <button type="button" id="startquizbutton" onclick="tips()">Tips</button>
+                <button type="button" id="nextButton" onclick="nextQuestion()" style="display: none;">Next Question</button>
+            </div>
+            <center>
+                <div id="questiondiv">
+                    <h2 id="questions">This is where Questions will appear.
+                        Click the button to start the quiz! --> </h2>
+                    <br><br><br><br><br><br>
+                </div>
+            </center>
+            <input type="text" id="answer" placeholder="Type Your Answer Here">
+            <button type="button" id="button1" onclick="checkAnswer();">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        // Define your array of questions and answers
+        var questions = [
+            { question: "When did they make the first steam engine? (year only)", answer: "1712" },
+            { question: "When did the first mechanical clocks begin to appear in Europe? (only the year)", answer: "1400" },
+            { question: "When was gunpowder invented? (Year only)", answer: "900" }
+        ];
+
+        var currentQuestionIndex = 0; // Track the current question index
+
+        // Function to show the loading overlay
+        function showLoadingOverlay() {
+            var loadingOverlay = document.getElementById("loading-overlay");
+            loadingOverlay.style.display = "flex";
+        }
+
+        // Function to hide the loading overlay
+        function hideLoadingOverlay() {
+            var loadingOverlay = document.getElementById("loading-overlay");
+            loadingOverlay.style.display = "none";
+        }
+
+        // Simulate some delay (e.g., 3 seconds) to mimic loading
+        setTimeout(function () {
+            hideLoadingOverlay(); // Hide the loading overlay
+            var websiteContent = document.getElementById("website-content");
+            websiteContent.style.display = "block"; // Display the website content
+        }, 3000); // Adjust the delay as needed
+
+        var selectedStringElement = document.getElementById("questiondiv");
+
+        function startQuiz() {
+            currentQuestionIndex = 0; // Reset the question index to start from the beginning
+            showQuestion(currentQuestionIndex);
+            document.getElementById("nextButton").style.display = "none";
+        }
+
+        function showQuestion(index) {
+            var selectedString = questions[index].question;
+            selectedStringElement.textContent = selectedString;
+        }
+
+        function checkAnswer() {
+            var userAnswer = document.getElementById("answer").value;
+            var correctAnswer = questions[currentQuestionIndex].answer;
+
+            if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                alert("Correct answer!");
+
+                // Move to the next question or finish if it's the last question
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) {
+                    showQuestion(currentQuestionIndex);
+                    document.getElementById("nextButton").style.display = "block";
+                } else {
+                    finishQuiz();
+                }
+            } else {
+                alert("Incorrect answer. Try again.");
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                showQuestion(currentQuestionIndex);
+                document.getElementById("nextButton").style.display = "block";
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function finishQuiz() {
+            // Calculate and display the results
+            var numCorrect = currentQuestionIndex; // Number of correct answers
+            var totalQuestions = questions.length; // Total number of questions
+            var resultText = "Quiz completed!\nYou answered " + numCorrect + " out of " + totalQuestions + " questions correctly.";
+            alert(resultText);
+
+            // Hide the submit button and next button
+            document.getElementById("button1").style.display = "none";
+            document.getElementById("nextButton").style.display = "none";
+        }
+    </script>
 </body>
-<script>
-// Function to show the loading overlay
-function showLoadingOverlay() {
-    var loadingOverlay = document.getElementById("loading-overlay");
-    loadingOverlay.style.display = "flex";
-}
-
-// Function to hide the loading overlay
-function hideLoadingOverlay() {
-    var loadingOverlay = document.getElementById("loading-overlay");
-    loadingOverlay.style.display = "none";
-}
-
-// Simulate some delay (e.g., 3 seconds) to mimic loading
-setTimeout(function() {
-    hideLoadingOverlay(); // Hide the loading overlay
-    var websiteContent = document.getElementById("website-content");
-    websiteContent.style.display = "block"; // Display the website content
-}, 3000); // Adjust the delay as needed
-</script>
 </html>
-
-
